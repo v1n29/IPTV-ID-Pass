@@ -1,0 +1,37 @@
+name: Auto-Update M3U
+
+# This tells the robot when to run
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Runs every 6 hours automatically
+  workflow_dispatch: # Gives you a manual "Run Now" button!
+
+# This gives the robot permission to save files to your repository
+permissions:
+  contents: write
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Shadow Protocol
+        env:
+          OTTC_COOKIE: ${{ secrets.OTTC_COOKIE }} # Pulls from your vault securely
+        run: node scraper.js
+
+      - name: Save the master.m3u back to GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add master.m3u
+          git commit -m "Auto-update playlist" || echo "No changes to commit"
+          git push
+          
