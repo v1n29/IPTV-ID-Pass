@@ -20,15 +20,27 @@ async function updateM3u() {
 
         if (linkMatch) {
             const freshUrl = linkMatch[0] + "&password=429150658646&type=m3u_plus&output=ts";
-            console.log("Success! Downloading massive payload...");
+            console.log("Success! Downloading fresh payload...");
 
-            // THE FIX: Download as a raw binary buffer instead of a giant text string
-            const m3uResponse = await fetch(freshUrl);
-            const arrayBuffer = await m3uResponse.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+            // THE FIX: We added the headers (wristband) to the final download!
+            const m3uResponse = await fetch(freshUrl, {
+                headers: {
+                    'Cookie': COOKIE,
+                    'User-Agent': USER_AGENT
+                }
+            });
             
-            fs.writeFileSync('master.m3u', buffer);
-            console.log("WAR WON! Playlist updated!");
+            const m3uContent = await m3uResponse.text();
+            
+            // THE SAFETY NET: If the file is suspiciously tiny/empty, stop the robot!
+            if (m3uContent.length < 100) {
+                console.error("CRITICAL FAILURE: The server returned an empty file or error page!");
+                console.log("Server response:", m3uContent);
+                process.exit(1); 
+            }
+            
+            fs.writeFileSync('master.m3u', m3uContent);
+            console.log("WAR WON! Playlist downloaded and it is full of channels!");
         } else {
             console.error("CRITICAL FAILURE: Link not found. The cookie has likely expired.");
             process.exit(1); 
