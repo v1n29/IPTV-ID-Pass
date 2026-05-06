@@ -5,7 +5,7 @@ const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
 async function updateM3u() {
-    console.log("Initiating Serverless Shadow Protocol (Heavy-Duty Mode)...");
+    console.log("Initiating Heavy-Duty Shadow Protocol...");
     
     try {
         const pageResponse = await fetch('https://freeiptv2023-d.ottc.xyz/index.php?action=view', {
@@ -25,7 +25,7 @@ async function updateM3u() {
                 freshUrl += "&type=m3u_plus&output=ts";
             }
             
-            console.log("Success! Link Captured. Commencing heavy download...");
+            console.log("Success! Capturing massive stream...");
 
             const m3uResponse = await fetch(freshUrl, {
                 headers: {
@@ -34,26 +34,27 @@ async function updateM3u() {
                 }
             });
 
-            if (!m3uResponse.ok) throw new Error(Server responded with ${m3uResponse.status});
+            // FIXED LINE: No backticks, just standard quotes to avoid syntax errors
+            if (!m3uResponse.ok) throw new Error('Server responded with status: ' + m3uResponse.status);
 
-            // THE FIX: We stream the data directly to the disk instead of storing it in a "string"
             const writer = fs.createWriteStream('master.m3u');
+            
+            // This pipes the data directly to the file to handle the huge size
             await pipeline(m3uResponse.body, writer);
             
-            // Check if file was actually written
             const stats = fs.statSync('master.m3u');
-            if (stats.size < 100) {
-                console.error("CRITICAL FAILURE: File is too small. Check cookie.");
+            if (stats.size < 500) { // Small size check
+                console.error("CRITICAL: File downloaded but it is too small. Check cookie!");
                 process.exit(1);
             }
 
-            console.log(WAR WON! Saved a massive file of ${Math.round(stats.size / 1024)} KB);
+            console.log("WAR WON! Saved " + Math.round(stats.size / 1024) + " KB to master.m3u");
         } else {
-            console.error("CRITICAL FAILURE: Link not found. Cookie expired.");
+            console.error("CRITICAL: Link not found. Cookie expired.");
             process.exit(1);
         }
     } catch (error) {
-        console.error("Heavy-Duty Error:", error.message);
+        console.error("Protocol Error:", error.message);
         process.exit(1);
     }
 }
