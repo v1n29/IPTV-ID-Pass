@@ -1,15 +1,15 @@
 const fs = require('fs');
-const http = require('http'); // Using the tank instead of fetch for the big file
+const http = require('http');
+const zlib = require('zlib'); // The magic shrinking tool
 const { pipeline } = require('stream/promises');
 
 const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
 async function updateM3u() {
-    console.log("Initiating Old-Reliable Shadow Protocol...");
+    console.log("Initiating Heavy-Duty Compressed Protocol...");
     
     try {
-        // We still use fetch for the tiny HTML page (it's safe here)
         const pageResponse = await fetch('https://freeiptv2023-d.ottc.xyz/index.php?action=view', {
             headers: {
                 'Cookie': COOKIE,
@@ -27,9 +27,8 @@ async function updateM3u() {
                 freshUrl += "&type=m3u_plus&output=ts";
             }
             
-            console.log("Success! Link Captured. Starting robust download...");
+            console.log("Success! Capturing massive stream and compressing...");
 
-            // THE TANK: We use http.get because it won't crash on "terminated" errors
             const request = http.get(freshUrl, {
                 headers: {
                     'Cookie': COOKIE,
@@ -38,29 +37,26 @@ async function updateM3u() {
                 }
             }, async (res) => {
                 if (res.statusCode !== 200) {
-                    console.error("Server rejected the request! Status: " + res.statusCode);
+                    console.error("Server rejected! Status: " + res.statusCode);
                     process.exit(1);
                 }
 
-                const fileStream = fs.createWriteStream('master.m3u');
+                // THE FIX: We pipe the data through Gzip before saving
+                const writer = fs.createWriteStream('master.m3u.gz');
+                const compressor = zlib.createGzip();
                 
                 try {
-                    await pipeline(res, fileStream);
-                    const stats = fs.statSync('master.m3u');
-                    console.log("WAR WON! Saved " + Math.round(stats.size / 1024) + " KB to master.m3u");
+                    await pipeline(res, compressor, writer);
+                    const stats = fs.statSync('master.m3u.gz');
+                    console.log("WAR WON! Compressed 500MB+ down to " + Math.round(stats.size / 1024 / 1024) + " MB");
                 } catch (err) {
-                    console.error("Download failed mid-stream: " + err.message);
+                    console.error("Compression failed: " + err.message);
                     process.exit(1);
                 }
-            });
-
-            request.on('error', (err) => {
-                console.error("Network Request Error: " + err.message);
-                process.exit(1);
             });
 
         } else {
-            console.error("CRITICAL: Link not found. Cookie expired.");
+            console.error("CRITICAL: Link not found.");
             process.exit(1);
         }
     } catch (error) {
@@ -70,4 +66,3 @@ async function updateM3u() {
 }
 
 updateM3u();
-
