@@ -20,16 +20,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run Shadow Protocol
+      - name: Run Clean Protocol
         env:
           OTTC_COOKIE: ${{ secrets.OTTC_COOKIE }}
         run: node scraper.js
 
-      - name: Upload to VIP Loading Dock
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: latest
-          files: master.m3u.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save the clean playlist
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add master.m3u
+          git commit -m "Update clean playlist" || echo "No changes"
+          git push
           
