@@ -25,12 +25,11 @@ jobs:
           OTTC_COOKIE: ${{ secrets.OTTC_COOKIE }}
         run: node scraper.js
 
-      - name: Save the compressed playlist
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
-          # THE FIX: Tell git to track the new .gz file
-          git add master.m3u.gz
-          git commit -m "Update compressed playlist" || echo "No changes"
-          git push
+      - name: Upload to VIP Loading Dock
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          files: master.m3u.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
