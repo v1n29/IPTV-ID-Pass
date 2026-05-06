@@ -1,10 +1,11 @@
 const fs = require('fs');
+const { pipeline } = require('stream/promises');
 
 const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
 async function updateM3u() {
-    console.log("Initiating Serverless Shadow Protocol...");
+    console.log("Initiating Serverless Shadow Protocol (Heavy-Duty Mode)...");
     
     try {
         const pageResponse = await fetch('https://freeiptv2023-d.ottc.xyz/index.php?action=view', {
@@ -16,20 +17,15 @@ async function updateM3u() {
         });
         
         const html = await pageResponse.text();
-        
-        // THE FIX: We changed the scanner to grab the ENTIRE URL including the fresh password
         const linkMatch = html.match(/http:\/\/freeiptv\.ottc\.xyz:80\/get\.php\?[^"'\s<>]+/);
 
         if (linkMatch) {
-            // We use the exact, untouched link the website generated
             let freshUrl = linkMatch[0];
-            
-            // Just ensuring it's formatted for M3U if the site forgot
             if (!freshUrl.includes('type=m3u')) {
                 freshUrl += "&type=m3u_plus&output=ts";
             }
             
-            console.log("Success! Captured full dynamic link:", freshUrl);
+            console.log("Success! Link Captured. Commencing heavy download...");
 
             const m3uResponse = await fetch(freshUrl, {
                 headers: {
@@ -37,23 +33,27 @@ async function updateM3u() {
                     'User-Agent': USER_AGENT
                 }
             });
+
+            if (!m3uResponse.ok) throw new Error(Server responded with ${m3uResponse.status});
+
+            // THE FIX: We stream the data directly to the disk instead of storing it in a "string"
+            const writer = fs.createWriteStream('master.m3u');
+            await pipeline(m3uResponse.body, writer);
             
-            const m3uContent = await m3uResponse.text();
-            
-            if (m3uContent.length < 100) {
-                console.error("CRITICAL FAILURE: The server returned an empty file or error page!");
-                console.log("Server response:", m3uContent);
-                process.exit(1); 
+            // Check if file was actually written
+            const stats = fs.statSync('master.m3u');
+            if (stats.size < 100) {
+                console.error("CRITICAL FAILURE: File is too small. Check cookie.");
+                process.exit(1);
             }
-            
-            fs.writeFileSync('master.m3u', m3uContent);
-            console.log("WAR WON! Playlist downloaded and it is full of channels!");
+
+            console.log(WAR WON! Saved a massive file of ${Math.round(stats.size / 1024)} KB);
         } else {
-            console.error("CRITICAL FAILURE: Link not found. The cookie has likely expired.");
-            process.exit(1); 
+            console.error("CRITICAL FAILURE: Link not found. Cookie expired.");
+            process.exit(1);
         }
     } catch (error) {
-        console.error("Network Error:", error.message);
+        console.error("Heavy-Duty Error:", error.message);
         process.exit(1);
     }
 }
