@@ -16,13 +16,21 @@ async function updateM3u() {
         });
         
         const html = await pageResponse.text();
-        const linkMatch = html.match(/http:\/\/freeiptv\.ottc\.xyz:80\/get\.php\?username=[^&"'> ]+/);
+        
+        // THE FIX: We changed the scanner to grab the ENTIRE URL including the fresh password
+        const linkMatch = html.match(/http:\/\/freeiptv\.ottc\.xyz:80\/get\.php\?[^"'\s<>]+/);
 
         if (linkMatch) {
-            const freshUrl = linkMatch[0] + "&password=429150658646&type=m3u_plus&output=ts";
-            console.log("Success! Downloading fresh payload...");
+            // We use the exact, untouched link the website generated
+            let freshUrl = linkMatch[0];
+            
+            // Just ensuring it's formatted for M3U if the site forgot
+            if (!freshUrl.includes('type=m3u')) {
+                freshUrl += "&type=m3u_plus&output=ts";
+            }
+            
+            console.log("Success! Captured full dynamic link:", freshUrl);
 
-            // THE FIX: We added the headers (wristband) to the final download!
             const m3uResponse = await fetch(freshUrl, {
                 headers: {
                     'Cookie': COOKIE,
@@ -32,7 +40,6 @@ async function updateM3u() {
             
             const m3uContent = await m3uResponse.text();
             
-            // THE SAFETY NET: If the file is suspiciously tiny/empty, stop the robot!
             if (m3uContent.length < 100) {
                 console.error("CRITICAL FAILURE: The server returned an empty file or error page!");
                 console.log("Server response:", m3uContent);
