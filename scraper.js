@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-// It secretly pulls your cookie from the GitHub Vault
 const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
@@ -21,17 +20,18 @@ async function updateM3u() {
 
         if (linkMatch) {
             const freshUrl = linkMatch[0] + "&password=429150658646&type=m3u_plus&output=ts";
-            console.log("Success! Downloading fresh payload...");
+            console.log("Success! Downloading massive payload...");
 
+            // THE FIX: Download as a raw binary buffer instead of a giant text string
             const m3uResponse = await fetch(freshUrl);
-            const m3uContent = await m3uResponse.text();
+            const arrayBuffer = await m3uResponse.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
             
-            // Saves it directly to the GitHub repository folder
-            fs.writeFileSync('master.m3u', m3uContent);
+            fs.writeFileSync('master.m3u', buffer);
             console.log("WAR WON! Playlist updated!");
         } else {
             console.error("CRITICAL FAILURE: Link not found. The cookie has likely expired.");
-            process.exit(1); // This tells GitHub to mark the run as "Failed" so you get an email alert!
+            process.exit(1); 
         }
     } catch (error) {
         console.error("Network Error:", error.message);
