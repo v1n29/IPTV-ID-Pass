@@ -12,9 +12,7 @@ const KEYWORDS = [
     '[24/7 O-D] INDIA', '[24/7 O-D] TELEGU', '[24/7 O-D] HINDI',
     '[24/7 O-D] MOVIES', '[24/7 O-D] COMEDY', '[24/7 O-D] ACTION', '[24/7 O-D] KIDS',
     'TELUGU|HUNGAMA [1080p]', 'TELUGU',
-    '[24/7 O-D] NETFLIX',
-    'HOTSTAR', 'NETFLIX', 'SLINGTV',
-    'PRIME VIDEO', 'DISNEY',
+    '[24/7 O-D]', 'SLINGTV',
     'Willow', 'Cricket'
 ];
 
