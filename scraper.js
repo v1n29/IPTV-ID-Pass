@@ -6,12 +6,16 @@ const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
 const KEYWORDS = [
-    'HINDI|', 'ENGLISH', 'AS | INDIA', 'USA | KIDS', 'USA | SPORTS', 'USA | MOVIES', 
-    'USA | NETFLIX', 'USA | SLINGTV', 'AS | TELEGU', AS | SPORTS', 'AS |', 'AS | INDIA', 'AS | TELEGU', 'AS | TELUGU', 'AS | HINDI', 'AS | ENGLISH', 'AS | SPORTS', 'AS | MOVIES',
+    'HINDI|', 'ENGLISH', 
+    'AS | INDIA', 'AS | TELEGU', 'AS | TELUGU', 'AS | HINDI', 
+    'AS | ENGLISH', 'AS | SPORTS', 'AS | MOVIES', 'AS |',
     '[24/7 O-D] INDIA', '[24/7 O-D] TELEGU', '[24/7 O-D] HINDI',
     '[24/7 O-D] MOVIES', '[24/7 O-D] COMEDY', '[24/7 O-D] ACTION', '[24/7 O-D] KIDS',
-    'TELUGU|HUNGAMA [1080p]', 'TELUGU', '[24/7 O-D] NETFLIX', 
-    'HOTSTAR', 'NETFLIX', 'SLINGTV', 'PRIME VIDEO', 'DISNEY'
+    'TELUGU|HUNGAMA [1080p]', 'TELUGU',
+    '[24/7 O-D] NETFLIX',
+    'HOTSTAR', 'NETFLIX', 'SLINGTV',
+    'PRIME VIDEO', 'DISNEY',
+    'Willow', 'Cricket'
 ];
 
 async function updateM3u() {
