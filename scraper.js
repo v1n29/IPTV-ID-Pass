@@ -6,7 +6,7 @@ const COOKIE = process.env.OTTC_COOKIE;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 
 const KEYWORDS = [
-    'HINDI|', 'ENGLISH', 
+    'HINDI|', 'ENGLISH', 'TELEGU', 
     'AS | INDIA', 'AS | TELEGU', 'AS | TELUGU', 'AS | HINDI', 
     'AS | ENGLISH', 'AS | SPORTS', 'AS | MOVIES', 'AS |',
     'TELUGU|HUNGAMA [1080p]', 'TELUGU',
