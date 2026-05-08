@@ -11,7 +11,7 @@ const KEYWORDS = [
     'AS | ENGLISH', 'AS | SPORTS', 'AS | MOVIES', 'AS |',
     'TELUGU|HUNGAMA [1080p]', 'TELUGU',
     '[24/7 O-D]', 'SLINGTV',
-    'Willow', 'Cricket'
+    'WILLOW CRICKET'
 ];
 
 async function updateM3u() {
