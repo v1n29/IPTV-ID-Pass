@@ -9,8 +9,6 @@ const KEYWORDS = [
     'HINDI|', 'ENGLISH', 
     'AS | INDIA', 'AS | TELEGU', 'AS | TELUGU', 'AS | HINDI', 
     'AS | ENGLISH', 'AS | SPORTS', 'AS | MOVIES', 'AS |',
-    '[24/7 O-D] INDIA', '[24/7 O-D] TELEGU', '[24/7 O-D] HINDI',
-    '[24/7 O-D] MOVIES', '[24/7 O-D] COMEDY', '[24/7 O-D] ACTION', '[24/7 O-D] KIDS',
     'TELUGU|HUNGAMA [1080p]', 'TELUGU',
     '[24/7 O-D]', 'SLINGTV',
     'Willow', 'Cricket'
